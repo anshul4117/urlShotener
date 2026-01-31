@@ -4,6 +4,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import { ApiError } from './utils/ApiError.js';
+import urlRoute from './route/urlRoute.js';
 
 dotenv.config();
 
@@ -34,7 +35,7 @@ app.get('/health', (req, res) => {
 });
 
 // --- Mount your routes here ---
-app.use('/api', (req, res) => res.json({ message: 'API root' }));
+app.use('/api/urls', urlRoute);
 
 // 404 handler
 app.use((req, res, next) => {
