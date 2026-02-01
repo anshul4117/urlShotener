@@ -27,7 +27,7 @@ if (process.env.NODE_ENV !== 'test') {
 
 // Body parsing
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 // Health check
 app.get('/health', (req, res) => {

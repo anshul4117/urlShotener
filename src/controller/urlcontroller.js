@@ -38,14 +38,13 @@ const urlShorter = async (req, res) => {
         );
     } catch (error) {
         // console.log(error.message);
-        throw new ApiError(500, 'URL shortening failed', error);
+        throw new ApiError(500, 'URL shortening failed');
     }
 }
 
 const redirectToOriginalUrl = async (req, res) => {
     const { shortCode } = req.params;
     try {
-        console.log("code : ",shortCode);
         const urlEntry = await Url.findOne({
             shortCode,
             isActive: true,
@@ -68,7 +67,41 @@ const redirectToOriginalUrl = async (req, res) => {
     } catch (error) {
         // If it's already an ApiError, rethrow to preserve status/message
         if (error instanceof ApiError) throw error;
-        throw new ApiError(500, 'Redirection failed', error);
+        throw new ApiError(500, 'Redirection failed');
     }
 }
-export { urlShorter, redirectToOriginalUrl }
+
+const urlsStats = async(req,res)=>{
+    try {
+        // console.log("Fetching stats for URL",  req.params);
+        const {shortCode} = req.params;
+        if(!shortCode){
+            throw new ApiError(400,'Short code is required');
+        }
+        const urlEntity = await Url.findOne({shortCode});
+        if(!urlEntity){
+            throw new ApiError(404,'URL not found');
+        }
+        res.status(200).json(
+            new ApiResponse(200,urlEntity,'URL stats fetched successfully')
+        );
+    } catch (error) {
+        throw new ApiError(500, error.message || 'Fetching URL stats failed');
+    }
+}
+
+const getAllUrls = async (req, res) =>{
+    try {
+        const urls = await Url.find({});
+        if(!urls){
+            throw new ApiError(404,'No URLs found');
+        }
+        res.status(200).json(
+            new ApiResponse(200,urls,'All URLs fetched successfully')
+        );
+    } catch (error) {
+        throw new ApiError(500, 'Fetching all URLs failed');
+    }
+}
+
+export { urlShorter, redirectToOriginalUrl, urlsStats, getAllUrls }
